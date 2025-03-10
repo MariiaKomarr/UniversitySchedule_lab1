@@ -20,8 +20,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Credits" class="control-label"></label>
-                <input asp-for="Credits" class="form-control" />
-                <span asp-validation-for="Credits" class="text-danger"></span>
+                <input asp-for="Credits" type="number" class="form-control" min="0" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

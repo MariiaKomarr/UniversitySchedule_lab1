@@ -39,3 +39,49 @@
 }
     </tbody>
 </table>
+
+
+<h2>Графік кількості груп за факультетами</h2>
+
+<div class="row">
+    <div class="col-3">
+        <div id="countByFacultyChart"></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            fetch('/api/charts/countByFaculty')
+                .then(response => response.json())
+                .then(data => {
+                    // Створюємо DataTable
+                    const dataTable = new google.visualization.DataTable();
+                    dataTable.addColumn('string', 'Факультет');
+                    dataTable.addColumn('number', 'Кількість груп');
+
+                    // Заповнюємо дані
+                    data.forEach(item => {
+                        dataTable.addRow([item.faculty, item.groupCount]);
+                    });
+
+                    // Налаштування для діаграми
+                    const options = {
+                        title: 'Кількість груп за факультетами',
+                        width: 600,
+                        height: 400,
+                        legend: { position: 'none' }
+                    };
+
+                    // Рендеримо діаграму у контейнер з ідентифікатором 'countByFacultyChart'
+                    const chart = new google.visualization.ColumnChart(document.getElementById('countByFacultyChart'));
+                    chart.draw(dataTable, options);
+                });
+        }
+    </script>
+}
