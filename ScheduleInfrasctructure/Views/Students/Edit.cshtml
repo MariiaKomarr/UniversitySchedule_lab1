@@ -25,12 +25,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control" type="email"
+                       pattern="@ViewData["EmailPattern"]"
+                       title="Enter a valid email (e.g., name.surname@example.com)" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
+                <input asp-for="Phone" class="form-control" type="tel"
+                       pattern="@ViewData["PhonePattern"]"
+                       title="Enter a valid phone number (e.g., +1234567890)" required />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
             <div class="form-group">

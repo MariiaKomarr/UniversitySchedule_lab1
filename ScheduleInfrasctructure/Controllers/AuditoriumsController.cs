@@ -58,6 +58,11 @@ namespace ScheduleInfrasctructure.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AuditoriumId,Name,Info")] Auditorium auditorium)
         {
+            if (_context.Auditoriums.Any(a => a.Name == auditorium.Name))
+            {
+                ModelState.AddModelError("Name", "This auditorium already exists.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(auditorium);

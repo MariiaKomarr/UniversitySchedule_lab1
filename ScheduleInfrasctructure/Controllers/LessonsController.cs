@@ -182,5 +182,39 @@ namespace ScheduleInfrasctructure.Controllers
         {
           return (_context.Lessons?.Any(e => e.LessonId == id)).GetValueOrDefault();
         }
+
+        [HttpGet]
+        public JsonResult GetWeeklySchedule()
+        {
+            var schedule = _context.Lessons
+                .Select(s => new
+                {
+                    dayOfWeek = s.DayOfWeek, // Monday, Tuesday...
+                    startTime = s.StartTime.ToString(@"hh\:mm"), // 09:00, 10:30...
+                    course = s.Course.Name,
+                    group = s.Group.Name,
+                    teacher = s.Teacher.FullName
+                })
+                .ToList();
+
+            return Json(schedule);
+        }
+
+        [HttpGet]
+        public JsonResult GetAuditoriumData()
+        {
+            var data = _context.Lessons
+                .GroupBy(s => s.Auditorium.Name)
+                .Select(g => new { Name = g.Key, Count = g.Count() })
+                .ToList();
+
+            return Json(new
+            {
+                labels = data.Select(d => d.Name).ToArray(),
+                counts = data.Select(d => d.Count).ToArray()
+            });
+        }
+
+
     }
 }

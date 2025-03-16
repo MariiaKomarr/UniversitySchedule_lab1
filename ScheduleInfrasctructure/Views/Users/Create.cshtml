@@ -23,22 +23,58 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
-                <input asp-for="Role" class="form-control" />
-                <span asp-validation-for="Role" class="text-danger"></span>
+                <label for="Role">Role</label>
+                <select id="Role" name="Role" class="form-control" required onchange="toggleRoleFields()">
+                    <option value="">-- Select Role --</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="student">Student</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="TeacherId" class="control-label"></label>
-                <select asp-for="TeacherId" class ="form-control" asp-items="ViewBag.TeacherId"></select>
+            <div class="form-group" id="TeacherField" style="display: none;">
+                <label for="TeacherId">Teacher</label>
+                <select id="TeacherId" name="TeacherId" class="form-control">
+                    <option value="">-- Select Teacher --</option>
+                    @foreach (var teacher in ViewBag.Teachers)
+                    {
+                        <option value="@teacher.TeacherId">@teacher.FullName</option>
+                    }
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="StudentId" class="control-label"></label>
-                <select asp-for="StudentId" class ="form-control" asp-items="ViewBag.StudentId"></select>
+            <div class="form-group" id="StudentField" style="display: none;">
+                <label for="StudentId">Student</label>
+                <select id="StudentId" name="StudentId" class="form-control">
+                    <option value="">-- Select Student --</option>
+                    @foreach (var student in ViewBag.Students)
+                    {
+                        <option value="@student.StudentId">@student.FullName</option>
+                    }
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+        
+        <script>
+            function toggleRoleFields() {
+                var role = document.getElementById("Role").value;
+                var teacherField = document.getElementById("TeacherField");
+                var studentField = document.getElementById("StudentField");
+
+                if (role === "teacher") {
+                    teacherField.style.display = "block";
+                    studentField.style.display = "none";
+                    document.getElementById("StudentId").value = ""; // Очищення вибору студента
+                } else if (role === "student") {
+                    teacherField.style.display = "none";
+                    studentField.style.display = "block";
+                    document.getElementById("TeacherId").value = ""; // Очищення вибору вчителя
+                } else {
+                    teacherField.style.display = "none";
+                    studentField.style.display = "none";
+                }
+            }
+        </script>
     </div>
 </div>
 

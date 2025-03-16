@@ -48,7 +48,9 @@ namespace ScheduleInfrasctructure.Controllers
         // GET: Teachers/Create
         public IActionResult Create()
         {
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Head");
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name");
+            ViewData["EmailPattern"] = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+            ViewData["PhonePattern"] = "^\\+?[0-9]{10,15}$";
             return View();
         }
 
@@ -65,7 +67,7 @@ namespace ScheduleInfrasctructure.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Head", teacher.DepartmentId);
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", teacher.DepartmentId);
             return View(teacher);
         }
 

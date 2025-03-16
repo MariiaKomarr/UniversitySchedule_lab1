@@ -48,7 +48,7 @@ namespace ScheduleInfrasctructure.Controllers
         // GET: Departments/Create
         public IActionResult Create()
         {
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "Dean");
+            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "Name");
             return View();
         }
 
@@ -82,13 +82,13 @@ namespace ScheduleInfrasctructure.Controllers
             {
                 return NotFound();
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "Dean", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "Name", department.FacultyId);
             return View(department);
         }
 
         // POST: Departments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DepartmentId,FacultyId,Name,Head")] Department department)
@@ -118,7 +118,7 @@ namespace ScheduleInfrasctructure.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "Dean", department.FacultyId);
+            ViewData["FacultyId"] = new SelectList(_context.Faculties, "FacultyId", "Name", department.FacultyId);
             return View(department);
         }
 

@@ -170,5 +170,7 @@ namespace ScheduleInfrasctructure.Controllers
         {
           return (_context.Groups?.Any(e => e.GroupId == id)).GetValueOrDefault();
         }
+
+        
     }
 }

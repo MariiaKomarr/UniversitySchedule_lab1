@@ -11,33 +11,33 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DayOfWeek)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Auditorium)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Group)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Teacher)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.DayOfWeek)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EndTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Auditorium)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Course)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Group)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Teacher)
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.DayOfWeek)
@@ -66,6 +66,143 @@
                 <a asp-action="Delete" asp-route-id="@item.LessonId">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+<div style="display: flex; align-items: flex-start;">
+    <!-- Таблиця розкладу (70% ширини) -->
+    <div style="width: 70%;">
+        <table class="schedule-table">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+            </tr>
+            </thead>
+            <tbody id="schedule-body">
+            <!-- Сюди буде вставлятися розклад через JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Графік (30% ширини) -->
+    <div style="width: 30%; text-align: center; padding-left: 20px;">
+        <canvas id="auditoriumChart" style="width: 100%; height: 250px;"></canvas>
+    </div>
+</div>
+
+
+<style>
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .schedule-table th, .schedule-table td {
+        border: 1px solid black;
+        text-align: center;
+        padding: 8px;
+    }
+    .schedule-table th {
+            background-color: #bbb; 
+        color: black; 
+    }
+    .schedule-cell {
+        background-color: lightgray;
+        padding: 5px;
+        font-size: 14px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/Lessons/GetWeeklySchedule')  
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched data:", data);
+
+                let scheduleBody = document.getElementById("schedule-body");
+                let timeSlots = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
+
+                timeSlots.forEach(time => {
+                    let row = document.createElement("tr");
+
+                    let timeCell = document.createElement("td");
+                    timeCell.textContent = time;
+                    row.appendChild(timeCell);
+
+                    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].forEach(day => {
+                        let cell = document.createElement("td");
+                        let lesson = data.find(l => {
+                            // Округлення часу до найближчої години
+                            let formattedTime = l.startTime.substring(0, 2) + ":00";
+                            return l.dayOfWeek === day && formattedTime === time;
+                        });
+
+                        if (lesson) {
+                            cell.innerHTML = `<div class='schedule-cell'><b>${lesson.course}</b><br>${lesson.group}<br>${lesson.teacher}</div>`;
+                        }
+
+                        row.appendChild(cell);
+                    });
+
+                    scheduleBody.appendChild(row);
+                });
+            });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<canvas id="auditoriumChart" style="max-width: 600px; height: 250px;"></canvas>
+
+<script>
+    fetch('/Lessons/GetAuditoriumData')
+        .then(response => response.json())
+        .then(data => {
+            var ctx = document.getElementById('auditoriumChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Заняття в аудиторіях',
+                        data: data.counts,
+                        backgroundColor: 'rgba(50, 50, 50, 0.8)', // Темно-сірий з прозорістю
+                        borderColor: 'rgba(30, 30, 30, 1)', // Темно-сірий контур
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: 'black' // Білий текст для підписів
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'black' // Білий текст для значень
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'black' // Білий текст для легенди
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error("Error loading chart data:", error));
+</script>
+
+

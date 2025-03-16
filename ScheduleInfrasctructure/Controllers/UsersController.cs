@@ -51,6 +51,8 @@ namespace ScheduleInfrasctructure.Controllers
         {
             ViewData["StudentId"] = new SelectList(_context.Students, "StudentId", "FullName");
             ViewData["TeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName");
+            ViewBag.Teachers = _context.Teachers.Select(t => new { t.TeacherId, t.FullName }).ToList();
+            ViewBag.Students = _context.Students.Select(s => new { s.StudentId, s.FullName }).ToList();
             return View();
         }
 
@@ -63,12 +65,20 @@ namespace ScheduleInfrasctructure.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (user.Role == "teacher")
+                {
+                    user.StudentId = null; // Якщо вчитель, то StudentId не зберігається
+                }
+                else if (user.Role == "student")
+                {
+                    user.TeacherId = null; // Якщо студент, то TeacherId не зберігається
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StudentId"] = new SelectList(_context.Students, "StudentId", "FullName", user.StudentId);
-            ViewData["TeacherId"] = new SelectList(_context.Teachers, "TeacherId", "FullName", user.TeacherId);
+            ViewBag.Teachers = _context.Teachers.Select(t => new { t.TeacherId, t.FullName }).ToList();
+            ViewBag.Students = _context.Students.Select(s => new { s.StudentId, s.FullName }).ToList();
             return View(user);
         }
 
@@ -170,5 +180,7 @@ namespace ScheduleInfrasctructure.Controllers
         {
           return (_context.Users?.Any(e => e.UserId == id)).GetValueOrDefault();
         }
+
+
     }
 }
